@@ -354,9 +354,9 @@ window.addEventListener('appinstalled', () => {
 
 function updateOnlineStatus() {
  if (!navigator.onLine) {
-  offlineBadge.hidden = false;
+  if (offlineBadge) offlineBadge.hidden = false;
  } else {
-  offlineBadge.hidden = true;
+  if (offlineBadge) offlineBadge.hidden = true;
  }
 }
 window.addEventListener('online', updateOnlineStatus);
