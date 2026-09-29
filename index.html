@@ -34,7 +34,7 @@ h1 i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(
 :focus-visible{outline:2px solid var(--pk2);outline-offset:2px}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:2px;scrollbar-width:none;flex:none}
 .tabs{display:flex;gap:18px;flex:none;align-items:center;border-bottom:1px solid var(--ln)}
-.tab{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;margin-bottom:-1px;padding:6px 0;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#a1738c;cursor:pointer}
+.tab{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;margin-bottom:-1px;padding:6px 0;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#a1738c}
 .tab:hover{border-color:transparent;color:var(--tx)}
 .tab.sel{border-bottom-color:var(--pk);color:var(--tx)}
 .tab.has::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--pk);margin-left:6px}
@@ -202,7 +202,7 @@ const FX={
    d[i]=(o[(y*w+Math.min(w-1,x+k))*4]+n)*dim*1.05;d[i+1]=(o[i+1]+n)*dim;d[i+2]=(o[(y*w+Math.max(0,x-k))*4+2]+n)*dim*1.08}}}),
  sparkle:(c,w,h)=>{const r=rnd(11);c.save();c.shadowColor='#ff3d9a';
   for(let n=0;n<16;n++){const x=r()*w,y=r()*h,z=w*(.014+r()*.032);c.shadowBlur=z*1.8;c.fillStyle=n%3?'#fff':'#ffb8dc';c.beginPath();c.moveTo(x,y-z);
-   c.quadraticCurveTo(x,y,x+z,y);c.quadraticCurveTo(x,y,x,y+z);c.quadraticCurveTo(x,y,x-z,y);c.quadraticCurveTo(x,y,x,y-z);c.fill()}c.restore()},
+   c.quadraticCurveTo(x,y,x+z,y);c.quadraticCurveTo(x,y,x,y+z);c.quadraticCurveTo(x,y,x-z,y);c.quadraticCurveTo(x,y,x,y+z);c.quadraticCurveTo(x,y,x-z,y);c.quadraticCurveTo(x,y,x,y-z);c.fill()}c.restore()},
  bokeh:(c,w,h)=>{const r=rnd(5);c.save();c.globalCompositeOperation='screen';
   for(let n=0;n<14;n++){const x=r()*w,y=r()*h,z=w*(.03+r()*.07);c.fillStyle=`rgba(255,${120+r()*60|0},190,${.1+r()*.14})`;c.strokeStyle='rgba(255,190,225,.35)';c.lineWidth=Math.max(1,w/300);
    c.beginPath();c.arc(x,y,z,0,6.283);c.fill();c.stroke()}c.restore()},
@@ -371,3 +371,6 @@ if ('serviceWorker' in navigator) {
    .catch(err => console.warn('SW registration failed:', err));
  });
 }
+</script>
+</body>
+</html>

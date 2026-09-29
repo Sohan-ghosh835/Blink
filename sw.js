@@ -1,4 +1,4 @@
-const CACHE_NAME = 'blink-v3';
+const CACHE_NAME = 'blink-v2';
 const ASSETS_TO_CACHE = [
   '/',
   './manifest.json',
