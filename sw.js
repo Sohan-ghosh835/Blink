@@ -1,9 +1,13 @@
-const CACHE_NAME = 'blink-v3';
+const CACHE_NAME = 'blink-v4';
 const ASSETS_TO_CACHE = [
   '/',
+  './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
+  './favicon.png',
+  './apple-touch-icon.png',
+  './main logo.png',
   'https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&display=swap'
 ];
 
