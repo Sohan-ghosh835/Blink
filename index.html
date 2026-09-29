@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>blink</title>
+<!-- PWA & Mobile Meta Tags -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff3d9a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="blink">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--pk:#ff3d9a;--pk2:#ffb8dc;--sf:#150a11;--ln:#4a1d36;--tx:#fff0f7;box-sizing:border-box;color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:#000;color:var(--tx);font-family:Syne,system-ui,sans-serif}
+[hidden]{display:none!important}
+#app{height:100%;max-width:460px;margin:0 auto;display:flex;flex-direction:column;padding:10px 14px 14px;gap:10px;position:relative}
+header{display:flex;justify-space-between;align-items:center;flex:none;gap:8px}
+.header-actions{display:flex;align-items:center;gap:8px}
+h1{font-weight:800;font-size:32px;letter-spacing:-.05em;color:var(--pk);display:flex;align-items:center}
+h1 i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--pk);margin-left:3px;animation:bl 4s infinite}
+@keyframes bl{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+.view{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}
+.b{border:1.5px solid var(--ln);background:var(--sf);color:var(--tx);font:600 13px Syne,system-ui,sans-serif;padding:9px 14px;border-radius:99px;cursor:pointer;white-space:nowrap;flex:none}
+.b:hover,.b.on{border-color:var(--pk)}
+.b.pk,.chip.on{background:var(--pk);color:#000;border-color:var(--pk)}
+:focus-visible{outline:2px solid var(--pk2);outline-offset:2px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px;scrollbar-width:none;flex:none}
+.chip[data-n]:not([data-n=""])::after{content:attr(data-n);margin-left:7px;background:#000;color:var(--pk);border-radius:99px;padding:0 6px}
+.box{flex:1;min-height:0;display:flex;justify-content:center;align-items:center}
+.stage{position:relative;height:100%;aspect-ratio:3/4;max-width:100%;border-radius:28px;overflow:hidden;border:2px solid var(--pk);box-shadow:0 0 44px rgba(255,61,154,.28)}
+#pv{width:100%;height:100%;object-fit:cover;display:block}
+#cd{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font:800 130px Syne,sans-serif;color:#fff;text-shadow:0 0 30px var(--pk);pointer-events:none}
+#cd small{font-size:16px;font-weight:700;color:var(--pk2);text-shadow:none}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;flex:none;padding:4px 2px}
+#gal{width:56px;height:74px;border:1.5px solid var(--pk);border-radius:14px;background:var(--sf);padding:0;overflow:hidden;cursor:pointer}
+#gt{width:100%;height:100%;display:block}
+#shut{width:82px;height:82px;border-radius:50%;border:3px solid var(--pk);background:transparent;padding:6px;cursor:pointer}
+#shut::after{content:"";display:block;width:100%;height:100%;border-radius:50%;background:var(--pk);box-shadow:0 0 26px rgba(255,61,154,.6);transition:transform .12s}
+#shut:active::after{transform:scale(.82)}
+#booth{justify-self:end}
+#ec{max-width:100%;max-height:100%;border-radius:18px;border:2px solid var(--pk)}
+.row{display:flex;gap:8px;flex:none;flex-wrap:wrap}
+.sl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;font-size:13px;color:var(--pk2);flex:none}
+input[type=range]{accent-color:var(--pk);width:100%}
+#grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;overflow:auto;align-content:start}
+.th{border:1.5px solid var(--ln);border-radius:12px;padding:0;overflow:hidden;background:var(--sf);cursor:pointer}
+.th:hover{border-color:var(--pk)}.th canvas{width:100%;display:block}
+.em{grid-column:1/-1;color:var(--pk2);padding:30px 0;text-align:center}
+#gate,#sm{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center}
+#gate h2{font-size:64px;font-weight:800;letter-spacing:-.06em;color:var(--pk)}
+#gate p{max-width:320px;line-height:1.5;color:var(--pk2)}
+#gerr{color:#fff;min-height:20px;font-size:14px}
+#sm{justify-content:flex-start;padding-top:calc(16px + env(safe-area-inset-top,0px));overflow:auto}
+#sc{max-height:66dvh;max-width:100%;border-radius:6px;box-shadow:0 0 44px rgba(255,61,154,.3)}
+.b[data-a]{background:var(--pk);color:#000;border-color:var(--pk)}
+.cell{position:relative}
+.x{position:absolute;top:6px;right:6px;border:0;border-radius:99px;background:rgba(0,0,0,.78);color:var(--pk2);font:700 12px Syne,system-ui,sans-serif;padding:5px 10px;cursor:pointer}
+.x[data-a]{background:var(--pk);color:#000}
+
+/* PWA Components */
+.offline-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;background:rgba(255,61,154,.15);border:1px solid var(--pk);border-radius:99px;color:var(--pk2)}
+.offline-badge i{width:6px;height:6px;border-radius:50%;background:#ff3d9a;box-shadow:0 0 8px var(--pk)}
+.pwa-banner{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:calc(100% - 28px);max-width:430px;background:rgba(21,10,17,.95);border:1.5px solid var(--pk);box-shadow:0 8px 36px rgba(255,61,154,.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:18px;padding:12px 14px;z-index:99;display:flex;align-items:center;justify-content:space-between;gap:10px;animation:slideUp .3s cubic-bezier(0.16,1,0.3,1)}
+@keyframes slideUp{from{transform:translate(-50%,120%);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+.pwa-info{display:flex;align-items:center;gap:10px}
+.pwa-icon{width:40px;height:40px;border-radius:10px;border:1px solid var(--pk);background:var(--sf);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--pk);font-size:18px;flex:none}
+.pwa-text{font-size:13px;font-weight:700;color:var(--tx);line-height:1.2}
+.pwa-text small{display:block;font-size:11px;font-weight:500;color:var(--pk2);margin-top:2px}
+.pwa-btns{display:flex;align-items:center;gap:6px;flex:none}
+.pwa-close{border:0;background:transparent;color:var(--pk2);font-size:18px;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+ <header>
+  <h1>blink<i></i></h1>
+  <div class="header-actions">
+   <div id="offline-badge" class="offline-badge" hidden><i></i> offline</div>
+   <button class="b pk" id="pwa-install" hidden>📲 Install</button>
+   <button class="b" id="flip">flip camera</button>
+  </div>
+ </header>
+
+ <section id="cam" class="view">
+  <div class="box"><div class="stage"><canvas id="pv"></canvas><div id="cd"></div><div id="flash"></div></div></div>
+  <div class="chips" id="chips"></div>
+  <div class="bar">
+   <button id="gal" aria-label="Open gallery"><canvas id="gt" width="56" height="74"></canvas></button>
+   <button id="shut" aria-label="Take photo"></button>
+   <button class="b" id="booth">photo strip</button>
+  </div>
+ </section>
+
+ <section id="ed" class="view" hidden>
+  <div class="box"><canvas id="ec"></canvas></div>
+  <div class="chips" id="echips"></div>
+  <div class="sl"><label for="br">brightness</label><input type="range" id="br" min="-60" max="60" value="0"><label for="ct">contrast</label><input type="range" id="ct" min=".6" max="1.6" step=".05" value="1"></div>
+  <div class="row"><button class="b" id="back">camera</button><button class="b" id="undo">undo filter</button><button class="b" id="clr">reset</button><button class="b" id="del">delete photo</button><button class="b pk" id="dl">download</button></div>
+ </section>
+
+ <section id="gl" class="view" hidden>
+  <div id="grid"></div>
+  <div class="row"><button class="b pk" id="gback">camera</button><button class="b" id="delall">delete all</button></div>
+ </section>
+</div>
+
+<div id="gate">
+ <h2>blink</h2>
+ <p>Blink needs your camera to show live filters. Nothing is uploaded: every photo stays on your device.</p>
+ <button class="b pk" id="allow">Allow camera</button>
+ <div id="gerr" role="alert"></div>
+</div>
+
+<div id="sm" hidden>
+ <canvas id="sc"></canvas>
+ <div class="row" style="justify-content:center">
+  <button class="b on" id="tb">black strip</button><button class="b" id="tp">pink strip</button>
+  <button class="b pk" id="sdl">download strip</button><button class="b" id="sx">close</button>
+ </div>
+</div>
+
+<!-- PWA Add to Home Screen Banner -->
+<div id="pwa-banner" class="pwa-banner" hidden>
+ <div class="pwa-info">
+  <div class="pwa-icon">b</div>
+  <div class="pwa-text">Install Blink<small>Add to home screen for instant offline use</small></div>
+ </div>
+ <div class="pwa-btns">
+  <button class="b pk" id="pwa-banner-install">Install</button>
+  <button class="pwa-close" id="pwa-banner-close" aria-label="Close banner">✕</button>
+ </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),sleep=t=>new Promise(r=>setTimeout(r,t));
+const FILTERS=[['glow','soft glow'],['dream','dreamy'],['fade','matte fade'],['film','film grain'],['cherry','cherry'],['leak','light leak'],['vhs','vhs'],['mono','mono'],['rose','rosé'],['noir','noir'],['dots','dots'],['pixel','pixel'],['glitch','glitch'],['blush','blush'],['poster','poster'],['invert','invert'],['grain','grain'],['scan','scanlines'],['vig','vignette']];
+const tmp=document.createElement('canvas'),tc=tmp.getContext('2d');
+const lum=(d,i)=>.3*d[i]+.59*d[i+1]+.11*d[i+2],mix=(a,b,t)=>a+(b-a)*t;
+const t2=document.createElement('canvas'),t2c=t2.getContext('2d');
+function soft(c,w,h,k){t2.width=Math.ceil(w/3);t2.height=Math.ceil(h/3);t2c.drawImage(c.canvas,0,0,t2.width,t2.height);
+ tmp.width=Math.ceil(w/k);tmp.height=Math.ceil(h/k);tc.drawImage(t2,0,0,tmp.width,tmp.height)}
+function px(c,w,h,fn){const im=c.getImageData(0,0,w,h);fn(im.data,w,h);c.putImageData(im,0,0)}
+const FX={
+ mono:(c,w,h)=>px(c,w,h,d=>{for(let i=0;i<d.length;i+=4)d[i]=d[i+1]=d[i+2]=lum(d,i)}),
+ rose:(c,w,h)=>px(c,w,h,d=>{for(let i=0;i<d.length;i+=4){const t=lum(d,i)/255;let r,g,b;
+  if(t<.5){const u=t*2;r=mix(12,255,u);g=mix(0,50,u);b=mix(10,150,u)}else{const u=(t-.5)*2;r=255;g=mix(50,205,u);b=mix(150,230,u)}
+  d[i]=r;d[i+1]=g;d[i+2]=b}}),
+ noir:(c,w,h)=>px(c,w,h,d=>{for(let i=0;i<d.length;i+=4)d[i]=d[i+1]=d[i+2]=(lum(d,i)-128)*1.7+120}),
+ dots:(c,w,h)=>{const d=c.getImageData(0,0,w,h).data,s=Math.max(6,Math.round(w/64));c.fillStyle='#000';c.fillRect(0,0,w,h);
+  for(let y=0;y<h;y+=s)for(let x=0;x<w;x+=s){const i=(Math.min(h-1,y+(s>>1))*w+Math.min(w-1,x+(s>>1)))*4,l=lum(d,i)/255;
+   c.fillStyle=`rgb(${d[i]},${d[i+1]},${d[i+2]})`;c.beginPath();c.arc(x+s/2,y+s/2,s*.56*Math.sqrt(l),0,6.283);c.fill()}},
+ pixel:(c,w,h)=>{const s=Math.max(6,w/52);tmp.width=Math.ceil(w/s);tmp.height=Math.ceil(h/s);tc.drawImage(c.canvas,0,0,tmp.width,tmp.height);
+  c.imageSmoothingEnabled=false;c.drawImage(tmp,0,0,tmp.width,tmp.height,0,0,tmp.width*s,tmp.height*s);c.imageSmoothingEnabled=true},
+ glitch:(c,w,h)=>px(c,w,h,d=>{const o=new Uint8ClampedArray(d),k=Math.round(w*.012);
+  for(let y=0;y<h;y++){const bd=Math.random()<.02?Math.round((Math.random()-.5)*w*.1):0;
+   for(let x=0;x<w;x++){const xs=Math.min(w-1,Math.max(0,x+bd)),i=(y*w+x)*4;
+    d[i]=o[(y*w+Math.min(w-1,xs+k))*4];d[i+1]=o[(y*w+xs)*4+1];d[i+2]=o[(y*w+Math.max(0,xs-k))*4+2]}}}),
+ blush:(c,w,h)=>{c.save();c.globalCompositeOperation='screen';c.fillStyle='rgba(255,50,140,.3)';c.fillRect(0,0,w,h);c.restore()},
+ poster:(c,w,h)=>px(c,w,h,d=>{for(let i=0;i<d.length;i++)if(i%4<3)d[i]=Math.round(d[i]/85)*85}),
+ invert:(c,w,h)=>px(c,w,h,d=>{for(let i=0;i<d.length;i++)if(i%4<3)d[i]=255-d[i]}),
+ grain:(c,w,h)=>px(c,w,h,d=>{for(let i=0;i<d.length;i+=4){const n=(Math.random()-.5)*64;d[i]+=n;d[i+1]+=n;d[i+2]+=n}}),
+ scan:(c,w,h)=>{const s=Math.max(3,Math.round(h/170));c.fillStyle='rgba(0,0,0,.4)';for(let y=0;y<h;y+=s)c.fillRect(0,y,w,Math.ceil(s/2.5))},
+ vig:(c,w,h)=>{const g=c.createRadialGradient(w/2,h/2,h*.22,w/2,h/2,h*.72);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.85)');c.fillStyle=g;c.fillRect(0,0,w,h)},
+ glow:(c,w,h)=>{soft(c,w,h,14);c.save();c.globalCompositeOperation='screen';c.globalAlpha=.6;c.drawImage(tmp,0,0,tmp.width,tmp.height,0,0,w,h);
+  c.globalAlpha=1;c.fillStyle='rgba(255,90,170,.1)';c.fillRect(0,0,w,h);c.restore()},
+ dream:(c,w,h)=>{soft(c,w,h,9);c.save();c.globalAlpha=.7;c.drawImage(tmp,0,0,tmp.width,tmp.height,0,0,w,h);
+  c.globalAlpha=1;c.globalCompositeOperation='screen';c.fillStyle='rgba(255,140,200,.2)';c.fillRect(0,0,w,h);c.restore()},
+ fade:(c,w,h)=>px(c,w,h,d=>{for(let i=0;i<d.length;i+=4){d[i]=d[i]*.82+46;d[i+1]=d[i+1]*.82+38;d[i+2]=d[i+2]*.82+44}}),
+ film:(c,w,h)=>px(c,w,h,d=>{for(let i=0;i<d.length;i+=4){const n=(Math.random()-.5)*34;d[i]=d[i]*.92+28+n;d[i+1]=d[i+1]*.92+20+n;d[i+2]=d[i+2]*.88+22+n}}),
+ cherry:(c,w,h)=>px(c,w,h,d=>{for(let i=0;i<d.length;i+=4){d[i]=d[i]*1.1+10;d[i+1]*=.86;d[i+2]=d[i+2]*1.02+8}}),
+ leak:(c,w,h)=>{c.save();c.globalCompositeOperation='screen';
+  let g=c.createLinearGradient(0,0,w*.9,h*.55);g.addColorStop(0,'rgba(255,50,140,.6)');g.addColorStop(.4,'rgba(255,150,100,.22)');g.addColorStop(1,'rgba(255,150,100,0)');
+  c.fillStyle=g;c.fillRect(0,0,w,h);g=c.createRadialGradient(w,h,0,w,h,w*.7);g.addColorStop(0,'rgba(255,20,120,.45)');g.addColorStop(1,'rgba(255,20,120,0)');
+  c.fillStyle=g;c.fillRect(0,0,w,h);c.restore()},
+ vhs:(c,w,h)=>px(c,w,h,d=>{const o=new Uint8ClampedArray(d),k=Math.max(2,Math.round(w*.007));
+  for(let y=0;y<h;y++){const dim=y%3===0?.82:1;for(let x=0;x<w;x++){const i=(y*w+x)*4,n=(Math.random()-.5)*26;
+   d[i]=(o[(y*w+Math.min(w-1,x+k))*4]+n)*dim*1.05;d[i+1]=(o[i+1]+n)*dim;d[i+2]=(o[(y*w+Math.max(0,x-k))*4+2]+n)*dim*1.08}}})
+};
+function fx(c,w,h,st,a){st.forEach(id=>FX[id](c,w,h));
+ if(a&&(a.b||a.c!=1))px(c,w,h,d=>{for(let i=0;i<d.length;i++)if(i%4<3)d[i]=(d[i]-128)*a.c+128+a.b})}
+function cover(c,src,sw,sh,w,h,mir){const ar=w/h;let cw=sw,ch=sh;sw/sh>ar?cw=sh*ar:ch=sw/ar;
+ c.save();if(mir){c.translate(w,0);c.scale(-1,1)}c.drawImage(src,(sw-cw)/2,(sh-ch)/2,cw,ch,0,0,w,h);c.restore()}
+
+/* camera */
+let face='user',stream=null,stack=[],photos=[],cur=null,busy=false,frames=[],theme='black';
+const pv=$('#pv'),pc=pv.getContext('2d',{willReadFrequently:true}),vid=document.createElement('video');
+vid.playsInline=true;vid.muted=true;pv.width=480;pv.height=640;
+async function start(){
+ $('#gerr').textContent='';
+ try{
+  if(stream)stream.getTracks().forEach(t=>t.stop());
+  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:face,width:{ideal:1280},height:{ideal:960}},audio:false});
+  vid.srcObject=stream;await vid.play();$('#gate').hidden=true;
+ }catch(e){$('#gerr').textContent='Camera is blocked or unavailable. Allow camera access for this page in your browser settings, then tap Allow camera again.';$('#gate').hidden=false}
+}
+function loop(){
+ if(vid.videoWidth&&!$('#cam').hidden){cover(pc,vid,vid.videoWidth,vid.videoHeight,480,640,face==='user');fx(pc,480,640,stack)}
+ requestAnimationFrame(loop)}
+function snap(){const vw=vid.videoWidth,vh=vid.videoHeight,w=Math.min(1080,Math.floor(Math.min(vw,vh*.75))),h=Math.round(w*4/3),c=document.createElement('canvas');
+ c.width=w;c.height=h;cover(c.getContext('2d'),vid,vw,vh,w,h,face==='user');return c}
+function paint(p,c){c.width=p.raw.width;c.height=p.raw.height;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(p.raw,0,0);fx(x,c.width,c.height,p.stack,p.adj)}
+const newPhoto=()=>({raw:snap(),stack:[...stack],adj:{b:0,c:1}});
+function flash(){const f=$('#flash');f.style.transition='none';f.style.opacity=.9;setTimeout(()=>{f.style.transition='opacity .4s';f.style.opacity=0},30)}
+
+/* chips */
+function mark(el,s){el.querySelectorAll('.chip').forEach(b=>{const i=s.indexOf(b.dataset.id);b.classList.toggle('on',i>=0);b.dataset.n=s.length>1&&i>=0?i+1:''})}
+function chips(el,get,on){FILTERS.forEach(([id,l])=>{const b=document.createElement('button');b.className='b chip';b.dataset.id=id;b.textContent=l;
+ b.onclick=()=>{const s=get(),i=s.indexOf(id);i<0?s.push(id):s.splice(i,1);mark(el,s);on()};el.append(b)})}
+chips($('#chips'),()=>stack,()=>{});
+chips($('#echips'),()=>cur.stack,()=>drawEd());
+
+/* views */
+function show(v){['cam','ed','gl'].forEach(k=>$('#'+k).hidden=k!==v);$('#flip').hidden=v!=='cam'}
+$('#allow').onclick=start;
+$('#flip').onclick=()=>{face=face==='user'?'environment':'user';start()};
+$('#shut').onclick=()=>{if(busy||!vid.videoWidth)return;flash();const p=newPhoto();photos.push(p);setTimeout(()=>edit(p),260)};
+function arm(b,txt,fn){const o=b.textContent;let t;b.onclick=()=>{if(b.dataset.a){clearTimeout(t);delete b.dataset.a;b.textContent=o;fn();return}
+ b.dataset.a=1;b.textContent=txt;t=setTimeout(()=>{delete b.dataset.a;b.textContent=o},2500)}}
+function gallery(){show('gl');const g=$('#grid');g.innerHTML='';$('#delall').hidden=!photos.length;
+ if(!photos.length)g.innerHTML='<p class="em">No shots yet. Hit the pink button.</p>';
+ photos.slice().reverse().forEach(p=>{const w=document.createElement('div'),b=document.createElement('button'),c=document.createElement('canvas'),x=document.createElement('button');
+  w.className='cell';b.className='th';x.className='x';x.textContent='delete';c.width=120;c.height=160;c.getContext('2d').drawImage(p.th,0,0);
+  b.append(c);b.onclick=()=>edit(p);arm(x,'sure?',()=>{photos.splice(photos.indexOf(p),1);upThumb();gallery()});w.append(b,x);g.append(w)})}
+$('#gal').onclick=gallery;
+arm($('#delall'),'delete all?',()=>{photos=[];upThumb();gallery()});
+$('#gback').onclick=$('#back').onclick=()=>show('cam');
+
+/* editor */
+const ec=$('#ec');let q=0;
+function drawEd(){if(q)return;q=requestAnimationFrame(()=>{q=0;if(!cur||!photos.includes(cur))return;paint(cur,ec);
+ const t=cur.th||(cur.th=document.createElement('canvas'));t.width=120;t.height=160;t.getContext('2d').drawImage(ec,0,0,120,160);upThumb()})}
+function edit(p){cur=p;show('ed');mark($('#echips'),p.stack);$('#br').value=p.adj.b;$('#ct').value=p.adj.c;drawEd()}
+function upThumb(){const c=$('#gt').getContext('2d'),p=photos[photos.length-1];c.clearRect(0,0,56,74);if(p&&p.th)c.drawImage(p.th,0,0,56,74)}
+arm($('#del'),'sure?',()=>{photos.splice(photos.indexOf(cur),1);cur=null;upThumb();photos.length?gallery():show('cam')});
+$('#br').oninput=e=>{cur.adj.b=+e.target.value;drawEd()};
+$('#ct').oninput=e=>{cur.adj.c=+e.target.value;drawEd()};
+$('#undo').onclick=()=>{cur.stack.pop();mark($('#echips'),cur.stack);drawEd()};
+$('#clr').onclick=()=>{cur.stack=[];cur.adj={b:0,c:1};edit(cur)};
+function save(c,name){c.toBlob(async b=>{
+ try{const d=window.claude&&await claude.use('downloads');if(d){await d.save({filename:name,data:b});return}}catch(e){if(e&&e.code==='declined')return}
+ const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click()},'image/png')}
+$('#dl').onclick=()=>save(ec,'blink-'+Date.now()+'.png');
+
+/* photo strip */
+$('#booth').onclick=async()=>{
+ if(busy||!vid.videoWidth)return;busy=true;const cd=$('#cd'),fr=[];
+ for(let n=0;n<4;n++){
+  for(let k=3;k>0;k--){cd.innerHTML=k+'<small>photo '+(n+1)+' of 4</small>';await sleep(700)}
+  cd.textContent='';flash();const c=document.createElement('canvas');paint(newPhoto(),c);fr.push(c);await sleep(400)}
+ busy=false;frames=fr;theme='black';drawStrip();$('#sm').hidden=false};
+function drawStrip(){
+ const W=600,P=44,F=W-2*P,G=24,H=P+4*F+3*G+170,c=$('#sc'),x=c.getContext('2d'),dark=theme==='black',ac=dark?'#ff3d9a':'#000';
+ c.width=W;c.height=H;x.fillStyle=dark?'#000':'#ff3d9a';x.fillRect(0,0,W,H);
+ frames.forEach((f,i)=>{const y=P+i*(F+G);x.drawImage(f,0,(f.height-f.width)*.4,f.width,f.width,P,y,F,F);x.strokeStyle=ac;x.lineWidth=5;x.strokeRect(P,y,F,F)});
+ x.fillStyle=ac;x.textAlign='center';x.font='800 76px Syne,system-ui,sans-serif';x.fillText('blink',W/2,H-90);
+ x.font='600 22px Syne,system-ui,sans-serif';x.fillText(new Date().toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}).toLowerCase(),W/2,H-46);
+ $('#tb').classList.toggle('on',dark);$('#tp').classList.toggle('on',!dark)}
+$('#tb').onclick=()=>{theme='black';drawStrip()};
+$('#tp').onclick=()=>{theme='pink';drawStrip()};
+$('#sdl').onclick=()=>save($('#sc'),'blink-strip-'+Date.now()+'.png');
+$('#sx').onclick=()=>$('#sm').hidden=true;
+
+loop();
+
+/* PWA Installation & Offline Support */
+let deferredPrompt = null;
+const pwaInstallBtn = $('#pwa-install');
+const pwaBanner = $('#pwa-banner');
+const pwaBannerInstall = $('#pwa-banner-install');
+const pwaBannerClose = $('#pwa-banner-close');
+const offlineBadge = $('#offline-badge');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+ e.preventDefault();
+ deferredPrompt = e;
+ if (pwaInstallBtn) pwaInstallBtn.hidden = false;
+ if (pwaBanner && !localStorage.getItem('blink_pwa_dismissed')) {
+  pwaBanner.hidden = false;
+ }
+});
+
+async function promptInstall() {
+ if (!deferredPrompt) return;
+ deferredPrompt.prompt();
+ const { outcome } = await deferredPrompt.userChoice;
+ console.log('Install prompt result:', outcome);
+ deferredPrompt = null;
+ if (pwaInstallBtn) pwaInstallBtn.hidden = true;
+ if (pwaBanner) pwaBanner.hidden = true;
+}
+
+if (pwaInstallBtn) pwaInstallBtn.onclick = promptInstall;
+if (pwaBannerInstall) pwaBannerInstall.onclick = promptInstall;
+if (pwaBannerClose) {
+ pwaBannerClose.onclick = () => {
+  if (pwaBanner) pwaBanner.hidden = true;
+  localStorage.setItem('blink_pwa_dismissed', 'true');
+ };
+}
+
+window.addEventListener('appinstalled', () => {
+ deferredPrompt = null;
+ if (pwaInstallBtn) pwaInstallBtn.hidden = true;
+ if (pwaBanner) pwaBanner.hidden = true;
+ console.log('Blink PWA successfully installed!');
+});
+
+function updateOnlineStatus() {
+ if (!navigator.onLine) {
+  offlineBadge.hidden = false;
+ } else {
+  offlineBadge.hidden = true;
+ }
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+/* Service Worker Registration */
+if ('serviceWorker' in navigator) {
+ window.addEventListener('load', () => {
+  navigator.serviceWorker.register('./sw.js')
+   .then(reg => console.log('SW registered:', reg.scope))
+   .catch(err => console.warn('SW registration failed:', err));
+ });
+}
+</script>
+</body>
+</html>
