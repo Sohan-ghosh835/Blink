@@ -1,8 +1,6 @@
-const CACHE_NAME = 'blink-v1';
+const CACHE_NAME = 'blink-v3';
 const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './blink (2).html',
+  '/',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
@@ -12,9 +10,15 @@ const ASSETS_TO_CACHE = [
 // Install Event - Precache critical assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
+    caches.open(CACHE_NAME).then(async (cache) => {
       console.log('[SW] Precaching app shell');
-      return cache.addAll(ASSETS_TO_CACHE);
+      for (const asset of ASSETS_TO_CACHE) {
+        try {
+          await cache.add(asset);
+        } catch (err) {
+          console.warn('[SW] Failed to cache asset:', asset, err);
+        }
+      }
     }).then(() => self.skipWaiting())
   );
 });
@@ -40,9 +44,6 @@ self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
-  // Handle cross-origin requests like Google Fonts
-  const url = new URL(event.request.url);
-
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -58,7 +59,7 @@ self.addEventListener('fetch', (event) => {
 
       // If not in cache, fetch from network and cache response
       return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic' && !event.request.url.includes('googleapis') && !event.request.url.includes('gstatic')) {
+        if (!networkResponse || networkResponse.status !== 200 || (networkResponse.type !== 'basic' && !event.request.url.includes('googleapis') && !event.request.url.includes('gstatic'))) {
           return networkResponse;
         }
 
@@ -69,9 +70,9 @@ self.addEventListener('fetch', (event) => {
 
         return networkResponse;
       }).catch(() => {
-        // If offline and request is HTML navigation, fallback to index.html
+        // If offline and request is HTML navigation, fallback to root /
         if (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html')) {
-          return caches.match('./index.html') || caches.match('./blink (2).html');
+          return caches.match('/') || caches.match('./index.html');
         }
       });
     })

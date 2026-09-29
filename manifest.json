@@ -2,7 +2,7 @@
   "name": "blink",
   "short_name": "blink",
   "description": "Retro aesthetic camera with instant filters, photo strips, and custom editor.",
-  "start_url": "./index.html",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
